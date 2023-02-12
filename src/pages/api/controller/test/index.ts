@@ -1,7 +1,7 @@
 import { NextApiResponse } from "next";
 import axios from "axios";
 
-export class UsersController {
+export class TestsController {
   async getAllUsers(res: NextApiResponse<any>): Promise<void> {
     const config = {
       headers: {
@@ -11,8 +11,8 @@ export class UsersController {
     };
 
     if (!process.env.PAGER_DUTY_TEST_API_TOKEN) {
-      res.status(500);
-      return res.json("No PagerDuty API Token");
+      res.status(400);
+      return res.json("Bad request: No page duty API token");
     }
 
     try {
@@ -21,12 +21,76 @@ export class UsersController {
         config
       );
       res.status(200);
+
       return res.json(response.data);
     } catch (error: any) {
       res.status(500);
-      return res.json(error);
+      res.json({ statusCode: 500, error: `an error happened: ${error}` });
     }
   }
+
+  async getAllContactMthodsOfUsers(res: NextApiResponse<any>): Promise<void> {
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Token token=${process.env.PAGER_DUTY_TEST_API_TOKEN} `,
+      },
+    };
+
+    if (!process.env.PAGER_DUTY_TEST_API_TOKEN) {
+      res.status(400);
+      return res.json("Bad request: No page duty API token");
+    }
+
+    try {
+      const response = await axios.get(
+        "https://api.pagerduty.com/users",
+        config
+      );
+
+      const userInformation = response.data.users.map((user: any) => {
+        console.log(user);
+
+        return {
+          name: user.name,
+          email: user.email,
+          contact_methods: user.contact_methods,
+        };
+      });
+
+      res.status(200);
+      res.json(userInformation);
+    } catch (error: any) {
+      res.status(500);
+      res.json({ statusCode: 500, error: `an error happened: ${error}` });
+    }
+  }
+
+  // async getAllUsers(res: NextApiResponse<any>): Promise<void> {
+  //   const config = {
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //       Authorization: `Token token=${process.env.PAGER_DUTY_TEST_API_TOKEN} `,
+  //     },
+  //   };
+  //
+  //   if (!process.env.PAGER_DUTY_TEST_API_TOKEN) {
+  //     res.status(500);
+  //     return res.json("No PagerDuty API Token");
+  //   }
+  //
+  //   try {
+  //     const response = await axios.get(
+  //       "https://api.pagerduty.com/users",
+  //       config
+  //     );
+  //     res.status(200);
+  //     return res.json(response.data);
+  //   } catch (error: any) {
+  //     res.status(500);
+  //     return res.json(error);
+  //   }
+  // }
 
   async getAllUsersByName(
     id: string | undefined,

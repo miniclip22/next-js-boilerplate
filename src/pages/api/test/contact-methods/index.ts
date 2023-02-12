@@ -1,4 +1,3 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from "next";
 import { HelloWorldController } from "@/pages/api/controller/hello-world";
 import { NotFoundException } from "@/pages/api/utils/exceptions/not-found.exception";
@@ -12,15 +11,7 @@ const router = (req: NextApiRequest, res: NextApiResponse) => {
   switch (req.method) {
     case "GET": {
       // return helloWorldController.getAllHelloWorlds(res);
-      return usersController.getAllUsers(res);
-    }
-    case "POST": {
-      const { user } = req.body;
-      // const [postName] = Array.isArray(name) ? name : [name];
-      // return helloWorldController.createNewHelloWorld(postName, res);
-      return usersController.createUser(user, res);
-    }
-    case "PUT": {
+      return usersController.getAllContactMthodsOfUsers(res);
     }
 
     default:
